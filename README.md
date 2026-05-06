@@ -2,10 +2,10 @@
 
 This is a standalone CrewAI project:
 
-- YAML-driven agent and task configuration (`project-1`, `project-2`, `project-5`)
-- Data analysis and reporting workflow design (`project-2`)
-- Multi-crew and sales-flow architecture (`project-3`)
-- Production-style runnable script and setup (`project-6`)
+- YAML-driven agent and task configuration.
+- Data analysis and reporting workflow design.
+- Multi-crew and sales-flow architecture.
+- Production-style runnable script and setup.
 
 ## Project Structure
 

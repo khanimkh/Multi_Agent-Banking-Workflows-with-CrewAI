@@ -1,7 +1,6 @@
 # Multi-Agent Banking Workflows with CrewAI
 
-This is a standalone CrewAI project created under `Multi-Agent-CrewAI`.
-It combines techniques used across the six projects in `CrewAI-project`:
+This is a standalone CrewAI project:
 
 - YAML-driven agent and task configuration (`project-1`, `project-2`, `project-5`)
 - Data analysis and reporting workflow design (`project-2`)

@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bank-assistant-crewai"
+version = "0.1.0"
+description = "Multi-agent bank assistant built with CrewAI patterns from projects 1-6"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "crewai>=0.121.0",
+  "crewai_tools>=0.12.1",
+  "python-dotenv>=1.0.1",
+  "pyyaml>=6.0.2",
+  "pandas>=2.2.2",
+  "matplotlib>=3.9.0",
+  "seaborn>=0.13.2",
+  "chromadb>=0.5.5",
+  "pydantic>=2.8.2",
+  "fastapi>=0.115.0",
+  "uvicorn>=0.30.6",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+bank-assistant = "bank_assistant_crew.main:main"
+bank-flow-kickoff = "bank_assistant_crew.flow_kickoff:main"
+bank-content = "bank_assistant_crew.content_pipeline:main"

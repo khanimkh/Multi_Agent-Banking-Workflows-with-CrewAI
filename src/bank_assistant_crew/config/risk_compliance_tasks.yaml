@@ -1,0 +1,36 @@
+transaction_risk_review:
+  agent: transaction_risk_agent
+  description: >
+    Review likely transaction patterns for {customer_name} in {region} and assess
+    risk posture at {risk_level} level.
+
+    Include:
+    - Potential fraud and abuse indicators
+    - Operational risk exposure
+    - Suggested monitoring checks
+  expected_output: >
+    A risk assessment summary with severity levels and rationale.
+
+compliance_validation:
+  agent: compliance_guardrail_agent
+  description: >
+    Validate advisory and service recommendations against compliance requirements.
+
+    Include:
+    - KYC/AML checklist considerations
+    - Region-specific guardrail notes for {region}
+    - Any blocked or high-risk actions requiring escalation
+  expected_output: >
+    A compliance validation memo with approved actions, conditions, and exceptions.
+
+risk_memo:
+  agent: risk_reporting_agent
+  description: >
+    Consolidate transaction and compliance outputs into a final risk and controls memo.
+
+    Include:
+    - Top risks and control actions
+    - Escalation triggers
+    - Monitoring cadence and owner suggestions
+  expected_output: >
+    A final markdown risk memo suitable for audit and risk operations review.

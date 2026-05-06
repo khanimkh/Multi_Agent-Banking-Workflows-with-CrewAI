@@ -1,0 +1,58 @@
+{
+  "scored_leads": [
+    {
+      "name": "Alex Morgan",
+      "region": "US",
+      "goal": "reduce monthly credit card debt",
+      "segment": "Mass Affluent",
+      "job_title": "Operations Manager",
+      "email": "alex.morgan@example.com",
+      "preferred_channel": "Mobile",
+      "lead_score": 85
+    },
+    {
+      "name": "Alex Morgan",
+      "region": "UAE",
+      "goal": "pre-approval for home loan",
+      "segment": "Emerging Affluent",
+      "job_title": "Finance Lead",
+      "email": "leila.haddad@example.com",
+      "preferred_channel": "WhatsApp",
+      "lead_score": 82
+    }
+  ],
+  "high_priority_leads": [
+    {
+      "name": "Alex Morgan",
+      "region": "US",
+      "goal": "reduce monthly credit card debt",
+      "segment": "Mass Affluent",
+      "job_title": "Operations Manager",
+      "email": "alex.morgan@example.com",
+      "preferred_channel": "Mobile",
+      "lead_score": 85
+    },
+    {
+      "name": "Alex Morgan",
+      "region": "UAE",
+      "goal": "pre-approval for home loan",
+      "segment": "Emerging Affluent",
+      "job_title": "Finance Lead",
+      "email": "leila.haddad@example.com",
+      "preferred_channel": "WhatsApp",
+      "lead_score": 82
+    }
+  ],
+  "emails": [
+    {
+      "subject_line": "Let's Connect: Tailored Financial Strategies for You",
+      "email_body": "Hi Alex,\n\nThank you for exploring our financial services! As the Operations Manager, I believe you will greatly benefit from our offerings targeted toward the Mass Affluent segment. \n\nI\u2019d like to set up a call to discuss tailored investment strategies that align with your financial goals. Additionally, we can dive into our customized banking solutions designed specifically for your needs.\n\n**Please reply with your availability, and I will arrange a convenient time to connect.** \n\nLooking forward to assisting you in achieving your financial objectives!\n\nBest regards,\n\n[Your Name]  \n[Your Title]  \n[Your Company]  \n[Your Contact Information]",
+      "primary_cta": "Reply with your availability to schedule a call."
+    },
+    {
+      "subject_line": "Schedule Your Personalized Financial Consultation",
+      "email_body": "Hi Alex,\n\nThank you for your interest in our financial services! With your impressive background as an Operations Manager and a strong lead score of 85, we\u2019re excited about the opportunity to support your financial goals effectively.\n\nTo proceed, let\u2019s schedule a meeting where we can discuss personalized solutions tailored just for you within the Mass Affluent segment. Our dedicated advisor is ready to provide valuable insights and actionable next steps to enhance your financial journey.\n\nPlease reply with your availability this week, and we\u2019ll find a time that works best for you!\n\nLooking forward to connecting soon!\n\nBest regards,\n\n[Your Name]  \n[Your Position]  \n[Your Company]  \n[Contact Information]",
+      "primary_cta": "Reply with your availability this week to schedule a meeting."
+    }
+  ]
+}

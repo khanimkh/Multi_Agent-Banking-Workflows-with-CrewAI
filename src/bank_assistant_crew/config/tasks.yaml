@@ -1,0 +1,55 @@
+customer_intake:
+  agent: customer_intake_agent
+  description: >
+    Build a customer profile for {customer_name} in {region}. Determine intent,
+    context, and constraints for the goal: {customer_goal}.
+
+    Include:
+    - Financial intent summary
+    - Potential urgency and risk indicators
+    - Data points still required from the customer
+  expected_output: >
+    A structured customer profile with key assumptions, missing data checklist,
+    and prioritized needs.
+
+product_advisory:
+  agent: product_advisory_agent
+  description: >
+    Propose a product strategy for {customer_name} with risk appetite {risk_level},
+    aligned to the goal: {customer_goal}.
+
+    Include:
+    - 2-3 recommended product pathways
+    - Eligibility and affordability considerations
+    - Pros, cons, and why each option fits
+  expected_output: >
+    A recommendation memo with ranked options and rationale.
+
+service_resolution:
+  agent: service_resolution_agent
+  description: >
+    Translate the advisory output into a service action plan for front-office and
+    digital support channels.
+
+    Include:
+    - Immediate actions (today)
+    - Near-term actions (next 7-30 days)
+    - Customer communication script highlights
+  expected_output: >
+    An actionable, timeline-based resolution plan with owners and follow-up cadence.
+
+advisory_report:
+  agent: report_generation_agent
+  description: >
+    Produce a final customer advisory report in markdown format for stakeholders,
+    combining intake, advisory, and service resolution outputs.
+
+    The report should include:
+    - Executive Summary
+    - Customer Goal and Context
+    - Recommended Banking Actions
+    - Service Timeline
+    - Risks and Mitigations
+    - Next Review Date
+  expected_output: >
+    A polished markdown report with clear sections and direct recommendations.

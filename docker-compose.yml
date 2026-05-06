@@ -1,0 +1,24 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODEL_NAME: ${OPENAI_MODEL_NAME:-gpt-4o-mini}
+      BANK_ALT_LLM: ${BANK_ALT_LLM:-gpt-4o-mini}
+      BANK_MARKET_LLM: ${BANK_MARKET_LLM:-gpt-4o-mini}
+      BANK_CREATOR_LLM: ${BANK_CREATOR_LLM:-gpt-4o-mini}
+      BANK_QA_LLM: ${BANK_QA_LLM:-gpt-4o-mini}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - ./frontend:/app/frontend
+      - ./reports:/app/reports
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

@@ -1,0 +1,8 @@
+txn_id,customer_id,txn_date,channel,merchant_category,amount,currency,country,is_flagged
+T1001,C001,2026-04-10,Card,Groceries,128.40,USD,US,false
+T1002,C001,2026-04-16,Card,Online Electronics,1499.00,USD,US,true
+T1003,C002,2026-04-12,Transfer,Person-to-Person,400.00,AED,UAE,false
+T1004,C003,2026-04-14,Card,Travel,3250.00,GBP,FR,true
+T1005,C004,2026-04-17,ATM,Cash Withdrawal,900.00,USD,US,false
+T1006,C005,2026-04-20,Card,Telecom,210.50,AED,UAE,false
+T1007,C004,2026-04-22,Transfer,International Transfer,7800.00,USD,SG,true

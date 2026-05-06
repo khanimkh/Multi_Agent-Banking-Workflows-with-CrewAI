@@ -1,0 +1,26 @@
+email_drafting:
+  agent: email_content_specialist
+  description: >
+    Draft a personalized banking follow-up email based on lead details.
+
+    Keep it short, direct, and customer-friendly.
+    Do not include salutations or sign-off phrases.
+
+    Use:
+    - Personal info: {personal_info}
+    - Company/segment info: {company_info}
+    - Lead score: {lead_score}
+  expected_output: >
+    A personalized email draft that explains relevant next steps and value clearly.
+
+engagement_optimization:
+  agent: engagement_strategist
+  description: >
+    Optimize the drafted email for engagement and action.
+
+    Include:
+    - Strong CTA for meeting, callback, or digital completion
+    - Friction-reducing message structure
+    - One clear primary next action
+  expected_output: >
+    A final, optimized email ready for delivery with strong CTA and engagement hooks.

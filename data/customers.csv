@@ -1,0 +1,6 @@
+customer_id,full_name,age,region,segment,monthly_income,existing_products,risk_profile,preferred_channel
+C001,Alex Morgan,34,US,Mass Affluent,7800,"Credit Card;Savings",medium,Mobile
+C002,Leila Haddad,29,UAE,Emerging Affluent,6200,"Current Account",low,WhatsApp
+C003,Ravi Patel,42,UK,Affluent,11400,"Mortgage;Current Account",medium,Email
+C004,Sara Kim,38,US,Mass Market,5400,"Credit Card;Auto Loan",high,Branch
+C005,Omar Nasser,31,UAE,Mass Market,4700,"Current Account;Debit Card",medium,Mobile

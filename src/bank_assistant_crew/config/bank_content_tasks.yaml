@@ -1,0 +1,30 @@
+monitor_banking_trends:
+  description: >
+    Monitor and summarize recent banking and fintech developments for {subject}.
+    Focus on customer behavior shifts, rate-sensitive segments, digital adoption,
+    and relevant regulatory changes in {region}.
+    Use the Banking Trend Signal Tool first and incorporate the returned signals.
+  expected_output: >
+    A concise trend brief with major developments, implications, and confidence notes.
+
+analyze_audience_opportunities:
+  description: >
+    Analyze the trend brief and derive audience messaging opportunities for {subject}.
+    Identify practical hooks for social content and long-form educational content.
+  expected_output: >
+    A messaging strategy memo with audience segments, key angles, and content priorities.
+
+create_bank_content:
+  description: >
+    Create social media content and one detailed blog article about {subject},
+    using the trend and audience insights. Social posts must be short, specific,
+    and action-oriented. Blog content should be educational and structured.
+  expected_output: >
+    A complete content package including social posts and a polished blog post.
+
+quality_assurance:
+  description: >
+    Review and refine all generated content for clarity, factual consistency,
+    and brand/compliance-safe language. Return final markdown-ready output.
+  expected_output: >
+    Final content package in high-quality markdown format, ready for publication.

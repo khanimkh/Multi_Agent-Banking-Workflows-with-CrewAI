@@ -1,0 +1,52 @@
+lead_data_collection:
+  agent: lead_data_agent
+  description: >
+    Collect and analyze lead information for banking assistance.
+
+    Use the available data tools to fetch customer profile, transactions,
+    and support ticket history before writing your assessment.
+
+    Customer inputs:
+    - Name, role, and profile relevance
+    - Region and preferred service channel
+    - Financial goal and urgency
+    - Existing products and known constraints
+
+    Lead data payload:
+    {lead_data}
+  expected_output: >
+    A comprehensive lead data report including customer profile summary,
+    missing data checklist, and risk/urgency notes.
+
+banking_fit_analysis:
+  agent: banking_fit_agent
+  description: >
+    Assess fit between the customer lead and bank capabilities.
+
+    Evaluate:
+    - Goal-to-product alignment
+    - Channel fit (branch/mobile/call center)
+    - Affordability and eligibility assumptions
+    - Qualitative fit score from 0-10
+
+    Lead data payload:
+    {lead_data}
+  expected_output: >
+    A fit analysis report with qualitative fit score, product-path rationale,
+    and supporting observations.
+
+lead_scoring_and_validation:
+  agent: scoring_validation_agent
+  description: >
+    Aggregate collected data and produce a validated qualification score.
+
+    Include:
+    - Final lead score from 0-100
+    - Criteria used (goal clarity, product fit, urgency, risk)
+    - Validation notes and any confidence caveats
+
+    Lead data payload:
+    {lead_data}
+  expected_output: >
+    A validated lead score report including final score, scoring criteria,
+    and quality checks.

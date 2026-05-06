@@ -1,0 +1,6 @@
+ticket_id,customer_id,created_at,issue_type,priority,status,resolution_time_minutes,satisfaction_rating,channel
+BK001,C001,2026-04-11 10:40,Card Limit Increase,Medium,Resolved,180,4,Mobile
+BK002,C004,2026-04-12 09:20,Suspicious Transaction,High,Resolved,95,3,Call Center
+BK003,C002,2026-04-13 14:15,Loan Eligibility Query,Low,Open,0,0,WhatsApp
+BK004,C003,2026-04-14 18:00,International Card Decline,High,Resolved,130,4,Email
+BK005,C005,2026-04-15 08:30,Statement Clarification,Low,Resolved,70,5,Mobile

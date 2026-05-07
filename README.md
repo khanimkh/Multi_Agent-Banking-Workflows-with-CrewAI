@@ -1,201 +1,346 @@
-# Multi-Agent Banking Workflows with CrewAI
+# Bank Assistant CrewAI
 
-This is a standalone CrewAI project:
+A production-ready multi-agent AI system built with [CrewAI](https://docs.crewai.com) that
+orchestrates five distinct banking workflows — from customer advisory and risk compliance,
+through lead qualification and email engagement, to AI-generated content — all accessible
+via a live web application and REST API.
 
-- YAML-driven agent and task configuration.
-- Data analysis and reporting workflow design.
-- Multi-crew and sales-flow architecture.
-- Production-style runnable script and setup.
+---
+
+## Features
+
+- **5 independent CrewAI workflows** driven entirely by YAML configuration
+- **Multi-LLM routing** — assign a different OpenAI model to each agent via environment variables
+- **Pydantic structured outputs** — enforce machine-readable JSON from every crew
+- **CrewAI Flow** — event-driven sales pipeline with `@start` / `@listen` decorators
+- **Custom tools** — agents read real CSV data (customers, transactions, support tickets) and live banking trend signals
+- **Background job API** — long-running workflows run in daemon threads; the UI polls for live log output
+- **FastAPI + Docker** — single-container deployment with volume-mounted source for live code updates
+
+---
+
+## Agents
+
+| Agent | Workflow | Responsibility |
+|---|---|---|
+| `customer_profile_agent` | Advisory | Profiles the customer's financial goals and history |
+| `product_recommendation_agent` | Advisory | Recommends suitable banking products |
+| `service_action_agent` | Advisory | Plans follow-up actions and communications |
+| `risk_assessment_agent` | Risk & Compliance | Reviews transactions for fraud and risk signals |
+| `compliance_validation_agent` | Risk & Compliance | Validates against regulatory requirements |
+| `risk_reporting_agent` | Risk & Compliance | Produces the final risk memo |
+| `lead_data_agent` | Lead Qualification | Fetches and enriches raw lead data from CSV |
+| `banking_fit_agent` | Lead Qualification | Scores product–customer fit |
+| `lead_scoring_agent` | Lead Qualification | Validates and outputs the final lead score |
+| `personalization_agent` | Email Engagement | Drafts a personalised outreach email |
+| `copywriting_agent` | Email Engagement | Optimises tone, CTA, and messaging |
+| `market_trends_agent` | Content Pipeline | Researches banking trends (uses `BankingTrendSignalTool`) |
+| `audience_insights_agent` | Content Pipeline | Analyses audience opportunities by region |
+| `content_creator_agent` | Content Pipeline | Writes blog post and social media posts |
+| `quality_assurance_agent` | Content Pipeline | Reviews and refines the final content output |
+
+---
 
 ## Project Structure
 
 ```text
 Bank-Assistant-CrewAI/
-  .gitignore
-  pyproject.toml
-  README.md
-  src/
-    bank_assistant_crew/
-      __init__.py
-      __main__.py
-      main.py
-      crew.py
-      models.py
-      sales_flow.py
-      flow_kickoff.py
-      content_pipeline.py
-      tools/
-        __init__.py
-        custom_tool.py
-      config/
-        agents.yaml
-        tasks.yaml
-        risk_compliance_agents.yaml
-        risk_compliance_tasks.yaml
-        bank_lead_qualification_agents.yaml
-        bank_lead_qualification_tasks.yaml
-        bank_email_engagement_agents.yaml
-        bank_email_engagement_tasks.yaml
-        bank_content_agents.yaml
-        bank_content_tasks.yaml
-  data/
-    customers.csv
-    transactions.csv
-    support_tickets.csv
-  reports/
-    .gitkeep
-  requirements.txt
+├── .env                          # OPENAI_API_KEY and model overrides (not committed)
+├── docker-compose.yml            # Service definition with volume mounts
+├── Dockerfile                    # python:3.11-slim, installs deps, runs uvicorn on port 8000
+├── requirements.txt              # All Python dependencies
+├── pyproject.toml                # Package metadata
+│
+├── data/
+│   ├── customers.csv             # Customer profile records
+│   ├── transactions.csv          # Transaction history records
+│   └── support_tickets.csv       # Customer support ticket records
+│
+├── frontend/
+│   ├── index.html                # Single-page web UI
+│   ├── app.js                    # Fetch API calls, job polling, result rendering
+│   └── style.css                 # Styling
+│
+├── reports/                      # All workflow outputs written here at runtime
+│   ├── bank_assistant_summary.md
+│   ├── bank_sales_flow_output.json
+│   ├── bank_blog_post.md
+│   ├── bank_social_posts.md
+│   └── bank_content_output.json
+│
+└── src/
+    └── bank_assistant_crew/
+        ├── __init__.py
+        ├── __main__.py           # Allows: python -m bank_assistant_crew
+        ├── main.py               # CLI entry point for primary workflows
+        ├── api.py                # FastAPI backend — all endpoints + job management
+        ├── crew.py               # Builds Crew, Agents, Tasks from YAML
+        ├── models.py             # Pydantic output models for structured results
+        ├── sales_flow.py         # BankSalesFlow — CrewAI Flow with @start/@listen
+        ├── flow_kickoff.py       # Async runner for BankSalesFlow
+        ├── content_pipeline.py   # Multi-LLM content generation pipeline
+        │
+        ├── config/
+        │   ├── agents.yaml                        # Advisory workflow agents
+        │   ├── tasks.yaml                         # Advisory workflow tasks
+        │   ├── risk_compliance_agents.yaml        # Risk & compliance agents
+        │   ├── risk_compliance_tasks.yaml         # Risk & compliance tasks
+        │   ├── bank_lead_qualification_agents.yaml
+        │   ├── bank_lead_qualification_tasks.yaml
+        │   ├── bank_email_engagement_agents.yaml
+        │   ├── bank_email_engagement_tasks.yaml
+        │   ├── bank_content_agents.yaml
+        │   └── bank_content_tasks.yaml
+        │
+        └── tools/
+            ├── __init__.py
+            └── custom_tool.py    # CustomerDataFetcherTool, TransactionDataFetcherTool,
+                                  # SupportTicketFetcherTool, BankingTrendSignalTool
 ```
 
-## What This Project Does
+---
 
-The project provides banking workflow orchestration with two coordinated CrewAI workflows:
+## Workflows
 
-1. Advisory and Service Workflow
-- Customer profiling and intent understanding
-- Product recommendation (cards, loans, savings)
-- Service action planning and follow-up communication
+### 1 — Customer Advisory and Service
+Uses `agents.yaml` + `tasks.yaml`. Three agents work sequentially to profile the
+customer, recommend products, and plan service actions.
 
-2. Risk and Compliance Workflow
-- Transaction risk review and fraud signal checks
-- Compliance validation based on region/risk level
-- Final risk memo and guardrail recommendations
+### 2 — Risk and Compliance Validation
+Uses `risk_compliance_agents.yaml` + `risk_compliance_tasks.yaml`. Assesses transaction
+risk, validates compliance rules by region, and produces a risk memo.
 
-It also includes a project-3 style two-crew pipeline:
+### 3 — Lead Qualification Crew
+Uses `bank_lead_qualification_agents.yaml` + `bank_lead_qualification_tasks.yaml`.
+Fetches lead data via `CustomerDataFetcherTool`, scores product fit, and outputs a
+validated `LeadQualificationOutput` Pydantic object.
 
-1. Bank Lead Qualification Crew
-- Defined in `src/bank_assistant_crew/config/bank_lead_qualification_agents.yaml` and `src/bank_assistant_crew/config/bank_lead_qualification_tasks.yaml`
-- Performs lead data collection, banking fit analysis, and lead scoring validation
+### 4 — Email Engagement Crew
+Uses `bank_email_engagement_agents.yaml` + `bank_email_engagement_tasks.yaml`.
+Takes a qualified lead and writes a personalised email with subject line, body, and
+CTA — validated as `EmailEngagementOutput`.
 
-2. Bank Email Engagement Crew
-- Defined in `src/bank_assistant_crew/config/bank_email_engagement_agents.yaml` and `src/bank_assistant_crew/config/bank_email_engagement_tasks.yaml`
-- Drafts and optimizes personalized customer follow-up emails
+### 5 — Multi-LLM Content Pipeline
+Uses `bank_content_agents.yaml` + `bank_content_tasks.yaml`. Four agents each run on
+a configurable LLM model to produce a blog post and platform-specific social posts —
+validated as `ContentOutput`.
 
-3. Bank Sales Flow + Flow Kickoff
-- Flow class in `src/bank_assistant_crew/sales_flow.py` (SalesPipeline-like pattern with `@start` and `@listen`)
-- Kickoff runner in `src/bank_assistant_crew/flow_kickoff.py`
-- Produces `reports/bank_sales_flow_output.json`
+### BankSalesFlow (CrewAI Flow)
+An event-driven pipeline in `sales_flow.py` that chains Workflows 3 and 4 automatically:
 
-4. Project-5 Style Multi-LLM Content Pipeline
-- Script: `src/bank_assistant_crew/content_pipeline.py`
-- Multi-LLM model routing per agent via environment variables
-- Generates structured social posts and blog post outputs
+```
+fetch_leads → score_leads → ┬→ store_leads_score
+                            └→ filter_leads (score ≥ 70) → write_email → send_email
+```
 
-## Web UI Executors
+---
 
-The frontend includes three workflow executors:
+## Pydantic Structured Output Models
 
-1. Customer Support and Advisory Executor
-- Runs primary advisory and risk/compliance workflows for one customer
+Defined in `models.py` and attached to tasks via `output_pydantic`:
 
-2. Sales Flow Executor
-- Runs lead qualification, prioritization, and follow-up email generation flow
+| Model | Used in | Fields |
+|---|---|---|
+| `LeadQualificationOutput` | Lead Qualification | `customer_name`, `lead_score`, `fit_score`, `recommended_path`, `risk_notes` |
+| `EmailEngagementOutput` | Email Engagement | `subject_line`, `email_body`, `primary_cta` |
+| `RiskComplianceOutput` | Risk & Compliance | `risk_level`, `top_risks`, `controls`, `escalation_required` |
+| `SocialMediaPost` | Content Pipeline | `platform`, `content` |
+| `ContentOutput` | Content Pipeline | `blog_post`, `social_media_posts` |
 
-3. Content Pipeline Executor
-- Generates blog and social content through multi-agent content workflow
-
-## Create Pydantic Models for Structured Output
-
-This project now includes a dedicated Pydantic schema module in `src/bank_assistant_crew/models.py`.
-
-Structured output models include:
-- `LeadQualificationOutput`
-- `EmailEngagementOutput`
-- `RiskComplianceOutput`
-- `SocialMediaPost`
-- `ContentOutput`
-
-Where they are used:
-- `src/bank_assistant_crew/crew.py`: attaches `output_pydantic` to lead scoring and email optimization tasks
-- `src/bank_assistant_crew/content_pipeline.py`: uses `ContentOutput` for blog + social structured generation
-
-Why this helps:
-- Consistent machine-readable outputs across crews
-- Easier validation and downstream automation
-- Similar technique to the structured output workflow used in `CrewAI-project` lessons
+---
 
 ## Setup
 
-1. Create and activate a virtual environment.
-2. Install dependencies:
+### Prerequisites
+- Python 3.11+
+- Docker Desktop (for Docker-based run)
+- An OpenAI API key
+
+### Step 1 — Create `.env`
+
+```env
+OPENAI_API_KEY=sk-proj-your-key-here
+
+# Optional: override the LLM per agent in the content pipeline
+OPENAI_MODEL_NAME=gpt-4o-mini
+BANK_MARKET_LLM=gpt-4o-mini
+BANK_STRATEGY_LLM=gpt-4o-mini
+BANK_CREATOR_LLM=gpt-4o-mini
+BANK_QA_LLM=gpt-4o-mini
+BANK_ALT_LLM=gpt-4o-mini
+```
+
+### Step 2 — Install dependencies (local Python only)
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Add environment variables in a `.env` file (for your selected model provider), e.g.:
-
-```env
-OPENAI_API_KEY=your_key_here
-```
+---
 
 ## Run
 
-```bash
-python -m bank_assistant_crew.main --customer-name "Alex Morgan" --customer-goal "reduce monthly credit card debt" --region "US" --risk-level "medium"
-```
-
-Run the project-3 style flow kickoff:
+### Docker (recommended)
 
 ```bash
-python -m bank_assistant_crew.flow_kickoff
+docker compose up --build -d
 ```
 
-Run the project-5 style content pipeline:
+Open the web UI: `http://localhost:8000`
+
+Stop:
 
 ```bash
-python -m bank_assistant_crew.content_pipeline --subject "AI-powered debt management" --region "US"
+docker compose down
 ```
 
-Output is written to:
+Check logs:
 
-- `reports/bank_assistant_summary.md`
-- `reports/bank_sales_flow_output.json`
-- `reports/bank_blog_post.md`
-- `reports/bank_social_posts.md`
-- `reports/bank_content_output.json`
+```bash
+docker compose logs -f app
+```
 
-These files are created automatically at runtime during successful workflow execution.
+### Local Python
 
-## Notes
-
-- The sample CSVs in `data/` are starter inputs to ground prompts and future tooling.
-
-## Web App and Docker
-
-This project now includes a backend API and a frontend web UI while preserving all existing CrewAI techniques.
-
-Added components:
-- Backend API: `src/bank_assistant_crew/api.py` (FastAPI)
-- Frontend UI: `frontend/` (HTML/CSS/JS served by FastAPI)
-- Docker files: `Dockerfile`, `docker-compose.yml`
-
-Important:
-- Existing techniques are kept intact (multi-crew, flow kickoff, multi-LLM content, tools, and Pydantic structured outputs).
-- Even if not all internals are visualized in frontend, they are still executed through backend endpoints and still runnable from CLI modules.
-
-Run locally (without Docker):
+Start the API server:
 
 ```bash
 uvicorn bank_assistant_crew.api:app --host 0.0.0.0 --port 8000
 ```
 
-Then open `http://localhost:8000` in a browser.
-
-Run with Docker Compose:
+Run primary workflows from CLI:
 
 ```bash
-docker compose up --build
+python -m bank_assistant_crew.main \
+  --customer-name "Alex Morgan" \
+  --customer-goal "reduce monthly credit card debt" \
+  --region "US" \
+  --risk-level "medium"
 ```
 
-Development note:
-- `docker-compose.yml` mounts `src/`, `frontend/`, `reports/`, and `data/` so code and UI changes are picked up without rebuilding the image.
+Run the sales flow from CLI:
 
-Endpoints/UI:
-- Single app URL: `http://localhost:8000`
+```bash
+python -m bank_assistant_crew.flow_kickoff
+```
 
-Key API routes:
-- `POST /run/primary`
-- `POST /run/flow`
-- `POST /run/content`
+Run the content pipeline from CLI:
+
+```bash
+python -m bank_assistant_crew.content_pipeline \
+  --subject "AI-powered debt management" \
+  --region "US"
+```
+
+---
+
+## CLI Arguments
+
+### `main.py`
+
+| Argument | Type | Default | Description |
+|---|---|---|---|
+| `--customer-name` | str | `"Alex Morgan"` | Full name of the customer |
+| `--customer-goal` | str | `"reduce monthly credit card debt"` | Customer's financial goal |
+| `--region` | str | `"US"` | Geographic region (affects compliance logic) |
+| `--risk-level` | str | `"medium"` | Initial risk classification hint |
+
+### `content_pipeline.py`
+
+| Argument | Type | Default | Description |
+|---|---|---|---|
+| `--subject` | str | `"responsible use of AI agents in retail banking"` | Content topic |
+| `--region` | str | `"US"` | Region for market trend research |
+
+---
+
+## API Endpoints
+
+| Method | Route | Description |
+|---|---|---|
+| `GET` | `/health` | Liveness check — returns `{"status": "ok"}` |
+| `GET` | `/` | Serves `frontend/index.html` |
+| `GET` | `/app.js` | Serves frontend JavaScript |
+| `GET` | `/style.css` | Serves frontend stylesheet |
+| `POST` | `/run/primary` | Runs advisory + risk workflows synchronously |
+| `POST` | `/jobs/primary` | Enqueues advisory + risk workflows as a background job |
+| `GET` | `/jobs/{job_id}` | Polls a background job for status and live log output |
+| `POST` | `/run/content` | Runs the content pipeline synchronously |
+| `POST` | `/run/flow` | Runs the BankSalesFlow asynchronously |
+| `GET` | `/reports` | Lists all files in the `reports/` directory |
+
+### Request bodies
+
+**`POST /run/primary` and `POST /jobs/primary`**
+```json
+{
+  "customer_name": "Alex Morgan",
+  "customer_goal": "reduce monthly credit card debt",
+  "region": "US",
+  "risk_level": "medium"
+}
+```
+
+**`POST /run/content`**
+```json
+{
+  "subject": "responsible use of AI agents in retail banking",
+  "region": "US"
+}
+```
+
+**`POST /run/flow`** — no request body required.
+
+---
+
+## Output Files
+
+All files are written to the `reports/` directory:
+
+| File | Written by | Contents |
+|---|---|---|
+| `bank_assistant_summary.md` | `main.py` / `/run/primary` | Combined advisory + risk workflow Markdown report |
+| `bank_sales_flow_output.json` | `sales_flow.py` | Scored leads, high-priority leads, drafted emails |
+| `bank_blog_post.md` | `content_pipeline.py` | Long-form blog post in Markdown |
+| `bank_social_posts.md` | `content_pipeline.py` | Platform-specific social posts |
+| `bank_content_output.json` | `content_pipeline.py` | Structured JSON with blog + social post data |
+
+---
+
+## Custom Tools
+
+| Tool | Assigned to | Data source |
+|---|---|---|
+| `CustomerDataFetcherTool` | `lead_data_agent` | `data/customers.csv` |
+| `TransactionDataFetcherTool` | `lead_data_agent` | `data/transactions.csv` |
+| `SupportTicketFetcherTool` | `lead_data_agent` | `data/support_tickets.csv` |
+| `BankingTrendSignalTool` | `market_trends_agent` | Hardcoded regional signals + topic injection |
+
+---
+
+## Docker Details
+
+The `docker-compose.yml` mounts four directories as live volumes so changes take
+effect immediately after a container restart — no rebuild needed for source code
+or frontend updates:
+
+```yaml
+volumes:
+  - ./src:/app/src
+  - ./frontend:/app/frontend
+  - ./reports:/app/reports
+  - ./data:/app/data
+```
+
+To apply Python code changes inside a running container:
+
+```bash
+docker compose restart app
+```
+
+To apply `docker-compose.yml` or `Dockerfile` changes:
+
+```bash
+docker compose up --build -d
+```
 - `GET /reports`
